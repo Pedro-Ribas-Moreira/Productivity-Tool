@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+            integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="crossorigin="anonymous"
+            />
+        <title>Pocket SME </title>
+        <?!= include (" css" ); ?>
+        </head>
+        <body>
+
+
+            <div class="loader-wrapper">
+                <div class="loader">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+
+            <!-- SAVED NOTES AREA -->
+            <div class="open-notes-div">
+                <div class="open-notes"><i class="fas fa-ellipsis-h"></i></div>
+            </div>
+            <div class="saved-notes hidden-notes">
+                <div class="close-saved-notes"><i class="fas fa-chevron-right"></i></div>
+                <nav class="navbar">
+                    <div class="navUl">
+                        <h4 class="saved-notes-title"></h4>
+                    </div>
+                </nav>
+                <div class="search-bar-div">
+                    <input type="text" class="form-style" id="searchBar"
+                        onkeyup="searchFunction()" placeholder="Search for..">
+                </div>
+                <div class="note-row">
+                </div>
+            </div>
+            <!-- MAIN DIV -->
+
+            <div class="main-div">
+                <!-- MAIN DIV - HEADER -->
+                <div class="header">
+                    <div class="logo-card">
+                        <img class="logo" src="" alt="flag-logo">
+                        <img class="logo-text" alt="text-logo">
+                    </div>
+                    <div class="action-route">
+                        <div>
+                            <button id="route-button" class="change-form
+                                button-white-color">ROUTE</button>
+                            <button id="action-button" class="change-form active
+                                button-white-color">ACTION</button>
+                        </div>
+                    </div>
+                    <div class="person-card">
+                        <img class="person-img" alt="text-logo">
+                    </div>
+                </div>
+
+                <!-- MAIN DIV - INPUTS -->
+
+                <div class="content">
+                    <div class="row policy">
+                        <h4 class="labels">Policy:</h4>
+                        <select id="policy-selector" class="form-style"
+                            name="policy-selector">
+                        </select>
+                    </div>
+
+                    <div class="row media-type-row">
+                        <h4 class="labels">Media type: </h4>
+                        <select id="media-type" class="form-style"
+                            name="media-selector">
+                        </select>
+                    </div>
+                    <div class="row language-row">
+                        <h4 class="labels">Language:</h4>
+                        <select name="languages" class="form-style"
+                            id="languages"><option value="select">Select</option></select>
+                    </div>
+
+                    <div class="row agnostic-row">
+                        <h4 class="labels">Agnostic Review:</h4>
+                        <div class="agnosticDiv">
+                            <div class="checkbox form-style"><i class="fas
+                                    fa-check"></i></div>
+                        </div>
+                    </div>
+                    <div class="row policy-filters-row" style="display: none">
+                        <h4 class="labels actionPolicyTag conditionalName"></h4>
+                        <select name="policy-filters" class="form-style"
+                            id="policy-filters"></select>
+                    </div>
+                    <div class="row policy-tag-row">
+                        <h4 class="labels actionPolicyTag">Policy tag:</h4>
+                        <select name="policyID" class="form-style"
+                            id="policyID"><option value="select">Select</option><option
+                                value="none" style="display:none"></option></select>
+                    </div>
+
+                    <div class="row actionOption">
+                        <h4 class="labels">Action explanation:</h4>
+                        <select name="actionExp" class="form-style"
+                            id='actionExp'><option class="select"
+                                value="select">Select</option><option
+                                value="none" style="display:none"></option></select>
+                    </div>
+
+                    <div class="row routingExpRow routeOption"
+                        style="display:none">
+                        <h4 class="labels">Routing explanation:</h4>
+                        <select name="routeExp" class="form-style"
+                            id='routeExp'>
+                            <option class="select" value="select"> Select
+                            </option>
+                            <option value="none" style="display:none"></option>
+                            <option value="action-vertical">Other</option>
+                        </select>
+                    </div>
+                    <div class="row higherActionRow routeOption" style="display:
+                        none">
+                        <h4 class="labels">Routing to: </h4>
+                        <select name="higherAction" class="form-style"
+                            id="higherAction">
+                            <option value="select">Select</option><option
+                                value="none" style="display:none"></option></select>
+                    </div>
+                    <div class="row suggested-tag routeOption" style="display:
+                        none">
+                        <div><h4 class="labels">Suggested Tag:</h4> <a
+                                class="linkTags" href="#" target="_blank"><i
+                                    class="fas fa-external-link-alt"></i></a></div>
+                        <div><input class="form-style suggested-tag-input"
+                                type="text"
+                                placeholder="Suggested Tag"></div>
+                    </div>
+                    <div class="row dedication-div" style="display : none">
+                        <h4 class="labels">Account dedication: </h4>
+                        <select class="form-select form-style
+                            form-select-default" name="dedicated-account"
+                            id="dedicated-account"><option value="select">Select</option><option
+                                value="">Not Reviewed</option><option
+                                value="not-dedicated">not dedicated.</option><option
+                                value="dedicated">Only video in the account.</option><option
+                                value="dedicated">All two cases in the account
+                                are violative.</option><option
+                                value="dedicated">Three or more violative cases
+                                in the account.</option></select>
+                    </div>
+
+                    <!-- ADDING VIOLATIVE VIDEOS ID -->
+                    <div class="row ID-div" style="display : none">
+                        <h4 class="labels">Violative video ID:</h4>
+                        <div class="col form-id-div">
+                            <div class="id-second-div">
+                                <input class="ID-input form-style" type="text"
+                                    placeholder="ID">
+                                <div class="add-id-div">
+                                    <input type="text" placeholder="Description"
+                                        class="id-description form-style">
+                                    <button class="ID-btn btn button-color"><i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ADDING TIMESTAMPS-->
+
+                    <div class="row timestamp-row">
+                        <h4 class="labels">Timestamp:</h4>
+                        <div class="col timestamp-div">
+                            <div class="timestamp-second-div">
+                                <div class="timer-div">
+                                    <div class="hr"><input class="form-style"
+                                            type="number" name="timer-hr"
+                                            id="timer-hr" placeholder="HR"
+                                            maxlength="2"></div>
+                                    <div class="min"><input class="form-style"
+                                            type="number" name="timer-min"
+                                            id="timer-min" placeholder="MIN"
+                                            maxlength="2"></div>
+                                    <div class="sec"><input class="form-style"
+                                            type="number" name="timer-sec"
+                                            id="timer-sec" placeholder="SEC"
+                                            maxlength="2"></div>
+                                </div>
+                                <div class="add-time-div">
+                                    <input type="text" placeholder="Description"
+                                        class="col timestamp-description
+                                        form-style">
+                                    <button class="add-timestamp button-color">
+                                        <i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="append row">
+                        <div class=""> <div class="t"></div> </div>
+                        <div class=""> <div class="r"></div> </div>
+                    </div>
+
+                    <!-- RESULT TEXT AREA -->
+
+                    <div class="row result-main-div" id="result-div">
+                        <textarea class="form-style result" name="result-text"
+                            id="floatingTextarea2" style="height: 100px"></textarea>
+                        <div class="btns">
+                            <div>
+                                <button id="copy-text" class="copy-text
+                                    button-color">Copy Text</button>
+                                <button id="save-text" class="save-note
+                                    button-color">Save Note</button>
+                            </div>
+                            <button class="btn m-2 reset-text"><i class="fas
+                                    fa-redo"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- FOOTER -->
+                <div class="footer">
+                    <img class="accenture-logo" alt="accenture-logo">
+                </div>
+            </div>
+            <!-- this div will show up when the user is using a out of date version of the app -->
+            <div class="newApp">
+                <div class="routing">
+                    <div class="logo-card">
+                        <img class="newApp-logo" alt="flag-logo">
+                        <img class="newApp-logo-text" alt="text-logo">
+                    </div>
+                    <div class="routing-selector">
+                        <h4> Update this app</h4>
+                        <a type="button" class="ancorButton" href="#"> Click
+                            Here
+                            for the new version </a>
+                    </div>
+                </div>
+            </div>
+            <!-- SCRIPTS -->
+            <script>  
+// VERSION CONTROL - CONNECTED WITH THE TAB "APP-VERSION" IN THE TRIX 
+const filterPolicySelector = document.querySelector("#policy-selector");
+const currentVersion = 0.1;
+
+google.script.run
+  .withSuccessHandler(getBasics)
+  .withFailureHandler(backendError)
+  .checkVersion();
+function getBasics(arg) {
+  console.log(arg.link);
+  if (arg.version != currentVersion) {
+    document.querySelector(".ancorButton").setAttribute("href", arg.link);
+    document.querySelector(".newApp").style.display = "flex";
+    document.querySelector(".loader-wrapper").style.display = "none";
+  } else {
+    google.script.run.withSuccessHandler(getPolicy).getPolicies();
+    google.script.run.withSuccessHandler(getUsername).getUser();
+    google.script.run.withSuccessHandler(getInfos).basicOption();
+  }
+}
+
+function backendError(err) {
+  console.log(error);
+}
+function getInfos(obj) {
+  document.querySelector("#languages").innerHTML =
+    "<option value= 'select'>Select</option>" + obj.languageList;
+  document.querySelector("#media-type").innerHTML =
+    "<option value= 'select'>Select</option>" + obj.mediaList;
+}
+
+let dataSet = {};
+function getPolicy(array) {
+  var list = array;
+  filterPolicySelector.innerHTML = " ";
+  var selectOption = document.createElement("option");
+  selectOption.innerHTML = "Select";
+  selectOption.setAttribute("value", `Select`);
+  filterPolicySelector.appendChild(selectOption);
+
+  for (var i = 0; i < list.length; i++) {
+    var o = document.createElement("option");
+    // console.log(list[i])
+    o.innerHTML = list[i].toUpperCase() + " Policy";
+    o.setAttribute("value", list[i]);
+    filterPolicySelector.appendChild(o);
+  }
+  document.querySelector(".loader-wrapper").style.display = "none";
+}
+
+function getUsername(user) {
+  document.querySelector(".saved-notes-title").innerText = user + "'s notes";
+}
+
+google.script.run.withSuccessHandler(loadImages).getImages();
+function loadImages(obj) {
+  var logoImg = document.querySelector(".logo");
+  logoImg.src = obj.find(({ id }) => id === "gd49de08142_0_2").url;
+  var logoTxt = document.querySelector(".logo-text");
+  logoTxt.src = obj.find(({ id }) => id === "gd49de08142_0_0").url;
+
+  var personImg = document.querySelector(".person-img");
+  personImg.src = obj.find(({ id }) => id === "gd49de08142_0_1").url;
+  var accentureLogo = document.querySelector(".accenture-logo");
+  accentureLogo.src = obj.find(({ id }) => id === "gd49de08142_0_4").url;
+  var newAppLogo = document.querySelector(".newApp-logo");
+  newAppLogo.src = obj.find(({ id }) => id === "gd49de08142_0_2").url;
+  var newAppLogoTxt = document.querySelector(".newApp-logo-text");
+  newAppLogoTxt.src = obj.find(({ id }) => id === "gd49de08142_0_0").url;
+}
+
+filterPolicySelector.addEventListener("change", (e) => {
+  let name = filterPolicySelector.value;
+  if (filterPolicySelector.value !== "Select") {
+    google.script.run.withSuccessHandler(loadData).getDataSet(name);
+    filterActionExp.innerHTML = " ";
+    filterPolicyTag.innerHTML = " ";
+    filterRouteExp.innerHTML = " ";
+    filterHigherAction.innerHTML = " ";
+    document.querySelector(".loader-wrapper").style.display = "grid";
+  }
+});
+
+function loadData(data) {
+  var obj = data;
+  var queue = filterPolicySelector.value;
+  filterActionExp.innerHTML =
+    "<option value= 'select'>Select</option>" + `${obj.actionList}`;
+  filterPolicyTag.innerHTML =
+    "<option value= 'select'>Select</option>" + `${obj.tagsNames}`;
+  filterRouteExp.innerHTML =
+    "<option value= 'select'>Select</option>" + `${obj.reasonsOptions}`;
+  filterHigherAction.innerHTML =
+    "<option value= 'select'>Select</option>" + `${obj.routingOptions}`;
+  document.querySelector(".linkTags").setAttribute("href", obj.tagsList);
+
+  if (obj.filters) {
+    document.querySelector(".policy-filters-row").style.display = "grid";
+    document.querySelector("#policy-filters").innerHTML =
+      "<option value='select'>Select</option>" + `${obj.filters}`;
+    document.querySelector(
+      ".conditionalName"
+    ).innerText = `${obj.conditionalName}`;
+  } else {
+    document.querySelector(".policy-filters-row").style.display = "none";
+    document.querySelector("#policy-filters").innerHTML =
+      "<option value = 'none'> </option>";
+  }
+  document.querySelector(".loader-wrapper").style.display = "none";
+  dataSet = obj;
+}
+
+// console.log(dataSet)
+
+</script>
+            <?!= include (" script" ); ?>
+            </body>
+        </html>
