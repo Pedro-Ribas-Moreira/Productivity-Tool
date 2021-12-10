@@ -1,0 +1,591 @@
+<script>  
+
+// const filterPolicySelector = document.querySelector("#policy-selector"); 
+const filterPolicyTag = document.querySelector("#policyID"); 
+const filterActionExp = document.querySelector("#actionExp"); 
+const filterLanguage = document.querySelector("#languages"); 
+const filterMedia = document.querySelector("#media-type"); 
+const filterDedication = document.querySelector("#dedicated-account"); 
+
+const routeBtn = document.querySelector("#route-button"); 
+const actionBtn = document.querySelector("#action-button"); 
+
+const filterRouteExp = document.querySelector("#routeExp"); 
+const policyTagRow = document.querySelector(".policy-tag-row"); 
+const filterHigherAction = document.querySelector("#higherAction"); 
+const suggestedTag = document.querySelector(".suggested-tag-input"); 
+
+// hidden divs 
+const dedicatedDiv = document.querySelector(".dedication-div"); 
+const dedicationTr = document.querySelector(".ID-div "); 
+const explanationRow = document.querySelector(".routingExpRow"); 
+const higherActionRow = document.querySelector(".higherActionRow") 
+
+// timestamp // time input 
+const timerHr = document.querySelector("#timer-hr"); 
+const timerMin = document.querySelector("#timer-min"); 
+const timerSec = document.querySelector("#timer-sec");
+const descriptionStamp = document.querySelector(".timestamp-description"); 
+const timeBtn = document.querySelector(".add-timestamp"); 
+const t = document.querySelector(".t"); 
+
+
+// channel IDs 
+const r = document.querySelector(".r"); 
+const idDescription = document.querySelector(".id-description"); 
+const idInput = document.querySelector(".ID-input"); 
+const idBtn = document.querySelector(".ID-btn"); 
+
+// others 
+
+const copyBtn = document.querySelector(".copy-text"); 
+const resultArea = document.querySelector(".result"); 
+const resetBtn = document.querySelector(".reset-text") 
+
+//render saved notes 
+
+document.addEventListener("DOMContentLoaded",getLocalNotes) 
+//change policy 
+
+routeBtn.addEventListener("click", changeToRoute); 
+actionBtn.addEventListener("click", changeToAction); 
+
+let lang = "" 
+filterLanguage.addEventListener("change", ()=>{ 
+  lang = "4$"+filterLanguage.value+"$"  
+  showResult(); 
+}); 
+ 
+
+let mt = "" 
+filterMedia.addEventListener("change", ()=>{ 
+  mt = " - Media type: " + filterMedia.options[filterMedia.selectedIndex].text; 
+  showResult() 
+}); 
+
+
+let st = ""; 
+suggestedTag.addEventListener("change", ()=>{ 
+  st = " Suggested tag: " + suggestedTag.value + " - "; 
+  showResult() 
+}); 
+
+// ACTION EVENT LISTENERS 
+filterPolicyTag.addEventListener("change", filteredOptions); 
+filterActionExp.addEventListener("change", showResult); 
+filterDedication.addEventListener("change", filteredAccountDedication) 
+
+//ROUTE EVENT LISTENERS 
+filterRouteExp.addEventListener("change", showResult); 
+filterHigherAction.addEventListener("change", showResult); 
+filterPolicyTag.addEventListener("change", showResult ); 
+ 
+// timer event listener 
+
+timerHr.addEventListener("change", checkValue); 
+timerMin.addEventListener("change", checkValue); 
+timerSec.addEventListener("change", checkValue); 
+
+// CLICK LISTENERS; 
+
+timeBtn.addEventListener("click", addTimestamp); 
+copyBtn.addEventListener("click", copyNote); 
+resetBtn.addEventListener("click", resetText); 
+r.addEventListener("click", deleteID); 
+t.addEventListener("click", deleteTime); 
+ 
+//SELECT BETWEEN ACTION AND ROUTING 
+
+const actionSelected = "action"; 
+function changeToRoute(){ 
+  const routeElements = document.querySelectorAll(".routeOption"); 
+  const actionElements = document.querySelectorAll(".actionOption") 
+  routeElements.forEach(e => { 
+    e.style.display = "grid"; 
+  }) 
+  actionElements.forEach(e =>{ 
+    e.style.display = "none"; 
+  }) 
+  actionBtn.classList.remove("active"); 
+  routeBtn.classList.add("active"); 
+  actionSelected = "route"; 
+} 
+
+function changeToAction(){ 
+  const routeElements = document.querySelectorAll(".routeOption"); 
+  const actionElements = document.querySelectorAll(".actionOption") 
+  routeElements.forEach(e => { 
+    e.style.display = "none"; 
+  }) 
+  actionElements.forEach(e =>{ 
+    e.style.display = "grid"; 
+  }) 
+
+  routeBtn.classList.remove("active") 
+  actionBtn.classList.add("active") 
+  actionSelected = "action"; 
+} 
+ 
+// ACTION FUNCTIONS 
+//FIRST LEVEL FILTER 
+//LOOP TROUGH ACTIONS EXPLANATIONS AND POLICY TAGS 
+//DISPLAY ONLY THE ITEMS WITH THE SAME CLASS AS THE FILTER (HEXADECIMAL COLOR) 
+
+document.querySelector(".policy-filters-row").addEventListener("change", ()=>{ 
+  filterActionExp.childNodes.forEach(e => { 
+    if(e.classList.contains(document.querySelector("#policy-filters").value) || e.value == "select" || e.classList.contains("#f3f3f3")){ 
+      e.style.display = "block"; 
+      } 
+    else{ 
+    e.style.display = "none"; 
+    } 
+  }) 
+  filterPolicyTag.childNodes.forEach(e => { 
+    if(e.classList.contains(document.querySelector("#policy-filters").value) || e.classList.contains("#f3f3f3") ){ 
+      e.style.display = "block"; 
+    } 
+    else{ 
+      e.style.display = "none"; 
+    } 
+    }) 
+}) 
+
+function filteredOptions() { 
+  filterActionExp.childNodes.forEach(function(e){ 
+    if(filterPolicyTag.value =="select"){ 
+      e.style.display = "block"; 
+    }else if(e.classList.contains(filterPolicyTag.options[filterPolicyTag.selectedIndex].classList[0]) && e.classList.contains(filterPolicyTag.value) ){ 
+      e.style.display = "block"; 
+    }else{ 
+      e.style.display ="none"; 
+    } 
+  }) 
+  if(filterPolicyTag.options[filterPolicyTag.selectedIndex].text.includes("Strike" ) || filterPolicyTag.options[filterPolicyTag.selectedIndex].text.includes("Terminate")){ 
+    dedicatedDiv.style.display = "grid"; 
+  }else{ 
+  dedicatedDiv.style.display = "none"; 
+  filterDedication.value = ""; 
+  } 
+showDedication(); 
+showResult(); 
+}
+
+// ACCOUNT DEDICATION FILTER  
+//FILTER THE DEDICATION LEVEL IN THE ACCOUNT 
+//HANDLE CASE THE DEDICATION LEVEL DOESNT MATCH WITH THE POLICY TAG APPLIED 
+
+let dv = ""; 
+function filteredAccountDedication(e){ 
+  if(filterDedication.value == "dedicated" && filterPolicyTag.options[filterPolicyTag.selectedIndex].text.includes("Strike" )){ 
+    filterDedication.classList.add("error"); 
+  }else if(filterDedication.value == "not-dedicated" && filterPolicyTag.options[filterPolicyTag.selectedIndex].text.includes("Terminate")){ 
+    filterDedication.classList.add("error"); 
+  }else{ 
+    filterDedication.classList.remove("error"); 
+  }  
+  
+  //CREATE A STRING ACCORDINGLY TO THE SELECTED INPUT 
+  dv = " - "+ filterDedication.options[filterDedication.selectedIndex].text + " - ";  
+  if(filterDedication.options[filterDedication.selectedIndex].text == "Not Reviewed " ){ 
+    dv = "";  
+  } 
+showResult(); 
+} 
+ 
+// TIMESTAMP INPUTS 
+function checkValue(e){ 
+const inputNumber = parseInt(e.target.value); 
+  if(inputNumber < 0){ 
+    e.target.value="59"; 
+  }else if(inputNumber >= 0 & inputNumber < 10){ 
+    e.target.value = "0" + inputNumber; 
+  }else if(inputNumber > 59){ 
+    e.target.value="0" 
+  } 
+}  
+
+function checkEmptyHr(){ 
+  if ( timerHr.value == ""){ 
+    timerHr.value = "00"; 
+  } 
+}
+
+function checkEmptyMin(){ 
+  if ( timerMin.value == ""){ 
+    timerMin.value = "00"; 
+  } 
+} 
+
+function checkEmptySec(){ 
+  if ( timerSec.value == ""){ 
+    timerSec.value = "00"; 
+  } 
+} 
+
+// // ADD THE TIMESTAMP 
+
+const timeArray = []; 
+function addTimestamp() { 
+  t.innerHTML = ""; 
+  checkEmptyHr(); 
+  checkEmptyMin(); 
+  checkEmptySec(); 
+  const timestamp = 
+  " ( @" +  
+  timerHr.value + ":" +  
+  timerMin.value +":" +  
+  timerSec.value + " : " +  
+  descriptionStamp.value + " ) - "; 
+  timeArray.push(timestamp); 
+  
+    for (let i = 0; i < timeArray.length; i++) { 
+      const newDiv = document.createElement("div"); 
+      newDiv.classList.add("time-div"); 
+      const newTimeP = document.createElement("div"); 
+      newTimeP.innerHTML = timeArray[i]; 
+      newDiv.appendChild(newTimeP); 
+      const dltBtn = document.createElement("div"); 
+      dltBtn.innerHTML = "<i class='fas fa-trash-alt'></i>"; 
+      dltBtn.classList.add("dlt-btn"); 
+      newDiv.appendChild(dltBtn); 
+      t.appendChild(newDiv); 
+    } 
+
+  timerHr.value = "";  
+  timerMin.value = "";  
+  timerSec.value = ""; 
+  descriptionStamp.value = ""; 
+  showResult(); 
+} 
+
+// // REMOVE THE TIMESTAMP 
+
+function deleteTime(e) { 
+  const item = e.target; 
+  const p = item.parentElement.childNodes[0]; 
+    timeArray.forEach((el) => { 
+      if (el === p.innerHTML) { 
+        timeArray.splice(timeArray.indexOf(p.innerHTML), 1); 
+        p.parentElement.remove(); 
+      } 
+    }); 
+  if(timeArray.length === 0){ 
+    t.innerHTML = ""; 
+  } 
+  showResult(); 
+} 
+ 
+// // ADD VIDEO ID IN CASE OF DEDICATED ACCOUNT 
+const idArray = []; 
+function showDedication() { 
+  if (filterPolicyTag.options[filterPolicyTag.selectedIndex].text.includes("Terminate") || filterActionExp.options[filterActionExp.selectedIndex].text.includes("Terminate")) { 
+    dedicationTr.style.display = "grid"; 
+    idBtn.addEventListener("click", () => { 
+    r.innerHTML = ""; 
+    const newID = "( ID: " + idInput.value + " : " + idDescription.value + " )"; 
+    idArray.push(newID); 
+    idInput.value = ""; 
+    idDescription.value = ""; 
+
+      for (let i = 0; i < idArray.length; i++) {  
+        const newDiv = document.createElement("div"); 
+        newDiv.classList.add("id-div"); 
+        const newIdP = document.createElement("div"); 
+        newIdP.innerHTML = idArray[i]; 
+        newDiv.appendChild(newIdP); 
+        
+        const dltBtn = document.createElement("div"); 
+        dltBtn.innerHTML = "<i class='fas fa-trash-alt'></i>"; 
+        dltBtn.classList.add("dlt-btn"); 
+        newDiv.appendChild(dltBtn); 
+        r.appendChild(newDiv); 
+      } 
+    showResult(); 
+    });
+  } else dedicationTr.style.display = "none"; 
+} 
+
+// //DELETE THE VIDEO ID 
+function deleteID(e) { 
+  const item = e.target; 
+  const p = item.parentElement.childNodes[0]; 
+    idArray.forEach((el) => { 
+      if (el === p.innerHTML) { 
+        idArray.splice(idArray.indexOf(p.innerHTML), 1); 
+        p.parentElement.remove(); 
+      } 
+   }); 
+    if(idArray.length === 0){ 
+      t.innerHTML = ""; 
+    } 
+  showResult(); 
+} 
+
+//AGNOSTIC CHECKBOX 
+const agnostic = ""; 
+document.querySelector(".checkbox").addEventListener("click", ()=>{ 
+  document.querySelector(".checkbox").classList.toggle("active"); 
+    if(document.querySelector(".checkbox").classList.contains("active")){ 
+      agnostic = " Agnostic Review" 
+    }else{ 
+      agnostic = ""; 
+    } 
+  showResult(); 
+});  
+
+// // RESULT DIV 
+
+function showResult() { 
+// CASE IT IS A ACTION RESULT  
+  if(actionSelected === "action"){ 
+    const resultText = 
+    filterPolicyTag.options[filterPolicyTag.selectedIndex].text + " - " + 
+    filterActionExp.options[filterActionExp.selectedIndex].text + " - " + 
+    timeArray.toString() +  
+    dv + 
+    idArray.toString() + 
+    " - " + lang + agnostic + mt; 
+    resultArea.value = resultText;  
+  }else if(actionSelected === "route"){ 
+    if(filterPolicySelector.value == `${dataSet.value}`){ 
+      const resultText = "Routing for " + 
+      filterRouteExp.options[filterRouteExp.selectedIndex].text + " - As " + `${dataSet.value.toUpperCase()}` + " Policy: " +  
+      filterPolicyTag.options[filterPolicyTag.selectedIndex].text + " - Routing to: " +  
+      filterHigherAction.options[filterHigherAction.selectedIndex].text + " - " + timeArray.toString() + 
+      st + lang + agnostic + mt; 
+      resultArea.value = resultText; 
+    }else{ 
+      const resultText = filterPolicySelector.options[filterPolicySelector.selectedIndex].text + " - Routing for " + 
+      filterRouteExp.options[filterRouteExp.selectedIndex].text + " - " + 
+      filterPolicyTag.options[filterPolicyTag.selectedIndex].text + " - Routing to: " +  
+      filterHigherAction.options[filterHigherAction.selectedIndex].text + " - " + timeArray.toString() + 
+      st + lang + agnostic + mt; 
+      resultArea.value = resultText; 
+    } 
+  } 
+} 
+ 
+// CLEAR THE REVIEW NOTE AND RESET THE INPUTS 
+function resetText(){ 
+  document.querySelector(".fa-redo").classList.add("full-rotate")  
+  filterPolicyTag.value="select"; 
+  filterActionExp.value="select"; 
+  filterRouteExp.value="select"; 
+  filterHigherAction.value="select"; 
+  filterLanguage.value="select"; 
+  lang = "" 
+  filterMedia.value="select"; 
+  mt = "" 
+  document.querySelector("#policy-filters").value = "select"; 
+  st = ""; 
+  dedicatedDiv.style.display = "none"; 
+  dv = ""; 
+  //RESET TIMESTAMP AND IDs 
+  timeArray.length = 0; 
+  idArray.length = 0; 
+  t.innerHTML = ""; 
+  r.innerHTML = ""; 
+  resultArea.value = ""; 
+    document.querySelector(".fa-redo").addEventListener("animationend", function(){ 
+      document.querySelector(".fa-redo").classList.remove("full-rotate") 
+    }); 
+  showResult(); 
+} 
+
+function copyNote() { 
+  resultArea.select(); 
+  document.execCommand("copy"); 
+} 
+
+// ---------------------------------------------------------------------- 
+
+//SAVED NOTES 
+document.querySelector(".close-saved-notes").addEventListener("click", ()=>{ 
+  document.querySelector(".main-div").classList.toggle("hidden-main"); 
+  document.querySelector(".saved-notes").classList.toggle("hidden-notes"); 
+  document.querySelector(".open-notes-div").classList.toggle("hidden-open-notes"); 
+}); 
+
+document.querySelector(".open-notes").addEventListener("click", ()=>{ 
+  document.querySelector(".main-div").classList.toggle("hidden-main"); 
+  document.querySelector(".saved-notes").classList.toggle("hidden-notes"); 
+  document.querySelector(".open-notes-div").classList.toggle("hidden-open-notes"); 
+  // document.querySelector(".close-saved-notes").classList.toggle("rotate") 
+}); 
+
+
+// create a new note div 
+document.querySelector(".save-note").addEventListener("click", ()=>{ 
+  const newID = new Date().getTime() 
+  createNote(resultArea.value, "NOTE TITLE" , newID); 
+  saveLocalNote(resultArea.value,"NOTE TITLE", newID);  
+}) 
+
+// delete and copy the note 
+document.querySelector(".note-row").addEventListener("click", (e)=>{ 
+  const item = e.target; 
+  const noteDiv = item.parentElement; 
+  const colDiv = noteDiv.parentElement 
+    if(item.classList[1] === "fa-times-circle"){ 
+    noteDiv.classList.add("fall"); 
+    deleteLocalNotes(noteDiv) 
+      noteDiv.addEventListener("transitionend", function(){ 
+        noteDiv.remove(); 
+        colDiv.remove(); 
+      }); 
+    } 
+    if(item.classList[0] === "copy-note"){ 
+    const elementText = noteDiv.childNodes[2].innerHTML; 
+    const inputElement = document.createElement("input"); 
+    inputElement.setAttribute('value', elementText); 
+    document.body.appendChild(inputElement); 
+    inputElement.select(); 
+    document.execCommand("copy"); 
+    inputElement.parentElement.removeChild(inputElement) 
+    noteDiv.classList.add("pop"); 
+      noteDiv.addEventListener("animationend", function(){ 
+        noteDiv.classList.remove("pop"); 
+      }) 
+    }  
+}) 
+
+//edit the note 
+document.querySelector(".note-row").addEventListener("keyup", (e)=>{ 
+  const elm = e.target 
+    if(elm.classList[0] === "note-description"){ 
+    const newTxt = elm.innerHTML 
+    const key = elm.parentElement.lastChild.innerHTML 
+    let notes; 
+      if(localStorage.getItem("notes")=== null){ 
+        notes = []; 
+      }else{ 
+        notes = JSON.parse(localStorage.getItem("notes")); 
+      }  
+    const index = notes.findIndex((note) => note.key == key); 
+    notes[index].noteDescription = newTxt; 
+    localStorage.setItem("notes", JSON.stringify(notes)) 
+  }
+    if(elm.classList[0] === "note-title"){ 
+    const newTxt = elm.innerHTML 
+    const key = elm.parentElement.lastChild.innerHTML 
+    let notes; 
+    if(localStorage.getItem("notes")=== null){ 
+      notes = []; 
+    }else{ 
+      notes = JSON.parse(localStorage.getItem("notes")); 
+    }  
+    const index = notes.findIndex((note) => note.key == key); 
+    notes[index].noteTitle = newTxt; 
+    localStorage.setItem("notes", JSON.stringify(notes)) 
+    } 
+}) 
+
+
+// changing value of paragraph and title 
+ 
+function createNote(noteDescription, noteTitle, noteKey){ 
+// col 
+  const newCol = document.createElement("div"); 
+  newCol.classList.add("col"); 
+  document.querySelector(".note-row").appendChild(newCol); 
+  // note 
+  const newNote = document.createElement("div"); 
+  newNote.classList.add("note"); 
+  newCol.appendChild(newNote); 
+  // delete icon 
+  const deleteIcon = document.createElement("i"); 
+  deleteIcon.classList.add("fas") 
+  deleteIcon.classList.add("fa-times-circle"); 
+  newNote.appendChild(deleteIcon) 
+
+  // title 
+  const newNoteTitle = document.createElement("h5"); 
+  newNoteTitle.innerHTML = noteTitle; 
+  newNoteTitle.classList.add("note-title"); 
+  newNoteTitle.setAttribute('contenteditable', 'true'); 
+  newNote.appendChild(newNoteTitle); 
+
+  // paragraph 
+  const newNoteText = document.createElement("p"); 
+  newNoteText.innerHTML = noteDescription; 
+  newNoteText.setAttribute('contenteditable', 'true'); 
+  newNoteText.classList.add("note-description"); 
+  newNote.appendChild(newNoteText); 
+  
+  // button 
+  const newCopyBtn = document.createElement("button"); 
+  newCopyBtn.innerHTML = "<i class='fas fa-copy'></i>"; 
+  newCopyBtn.classList.add("copy-note"); 
+  newCopyBtn.classList.add("btn"); 
+  newCopyBtn.classList.add("m-2"); 
+  newCopyBtn.classList.add(".button-white-color"); 
+  newCopyBtn.setAttribute('type', 'button'); 
+  newNote.appendChild(newCopyBtn); 
+
+  const hiddenKey = document.createElement("div"); 
+  hiddenKey.innerHTML = noteKey; 
+  hiddenKey.classList.add("key"); 
+  hiddenKey.style.display = "none"; 
+  newNote.appendChild(hiddenKey);  
+} 
+
+function saveLocalNote(note, title, key){ 
+let notes; 
+  if(localStorage.getItem("notes")=== null){ 
+    notes = []; 
+  }else{ 
+    notes = JSON.parse(localStorage.getItem("notes")); 
+  } 
+const noteItem = {noteTitle: title, noteDescription: note, key: key} 
+notes.push(noteItem); 
+localStorage.setItem("notes", JSON.stringify(notes)) 
+} 
+ 
+
+function getLocalNotes(){ 
+let notes; 
+  if(localStorage.getItem("notes")=== null){ 
+  notes = []; 
+  }else{ 
+  notes = JSON.parse(localStorage.getItem("notes")); 
+  } 
+  document.querySelector(".note-row").innerHTML = ""; 
+  notes.forEach((note)=>{ 
+    createNote(note.noteDescription, note.noteTitle, note.key) 
+}) 
+}  
+
+function deleteLocalNotes(e){ 
+let notes; 
+  if(localStorage.getItem("notes")=== null){ 
+  notes = []; 
+  }else{ 
+  notes = JSON.parse(localStorage.getItem("notes")); 
+} 
+const dltKey = e.children[4].innerHTML 
+notes.forEach((note)=>{ 
+    if(note.key == dltKey){ 
+      notes.splice(notes.indexOf(note), 1) 
+    } 
+  }) 
+localStorage.setItem("notes", JSON.stringify(notes)) 
+} 
+
+function searchFunction(){ 
+const n = document.querySelectorAll(".note") 
+const input = document.querySelector("#searchBar"); 
+const filter = input.value.toUpperCase(); 
+for(i = 0; i < n.length; i++){ 
+  a = n[i].childNodes[1]; 
+  b = n[i].childNodes[2]; 
+  titleValue = a.textContent || a.innerText; 
+  txtValue = b.textContent || a.innerText; 
+  if (txtValue.toUpperCase().indexOf(filter) > -1 || titleValue.toUpperCase().indexOf(filter) > -1) { 
+      n[i].parentElement.style.display = "flex"; 
+    } else { 
+      n[i].parentElement.style.display = "none"; 
+    } 
+  } 
+} 
+
+</script> 
